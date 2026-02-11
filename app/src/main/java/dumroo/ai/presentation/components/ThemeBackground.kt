@@ -18,23 +18,21 @@ fun ThemeBackground(
     isDarkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    // 1. Define Base Colors
     val BrandBlue = Color(0xFF3B82F6)
     val BrandOrange = Color(0xFFF97316)
 
-    // 2. Calculate Dynamic Values based on Theme
     val backgroundColor = if (isDarkTheme) Color.Black else Color.White
 
-    // Dark Mode = Strong Glow (0.6f), Light Mode = Subtle Tint (0.15f)
     val blueAlpha = if (isDarkTheme) 0.6f else 0.4f
     val orangeAlpha = if (isDarkTheme) 0.5f else 0.4f
+
+    val bottomBlueAlpha = if (isDarkTheme) 0.4f else 0.2f
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
     ) {
-        // --- LAYER 1: CENTER BLUE ---
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -43,14 +41,13 @@ fun ThemeBackground(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             BrandBlue.copy(alpha = blueAlpha),
-                            BrandBlue.copy(alpha = 0.01f), // Fade to almost transparent
+                            BrandBlue.copy(alpha = 0.01f),
                             Color.Transparent
                         )
                     )
                 )
         )
 
-        // --- LAYER 2: LEFT ORANGE ---
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -69,7 +66,6 @@ fun ThemeBackground(
                 )
         )
 
-        // --- LAYER 3: RIGHT ORANGE ---
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -88,8 +84,40 @@ fun ThemeBackground(
                 )
         )
 
-        // --- CONTENT ---
-        // This is where Scaffold and everything else sits
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth(0.5f)
+                .height(150.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            BrandBlue.copy(alpha = bottomBlueAlpha),
+                            Color.Transparent
+                        ),
+                        center = Offset(0f, Float.POSITIVE_INFINITY),
+                        radius = 400f
+                    )
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .fillMaxWidth(0.5f)
+                .height(150.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            BrandBlue.copy(alpha = bottomBlueAlpha),
+                            Color.Transparent
+                        ),
+                        center = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+                        radius = 400f
+                    )
+                )
+        )
+
         content()
     }
 }

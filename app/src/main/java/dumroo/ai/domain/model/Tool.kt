@@ -8,5 +8,5 @@ data class Tool(
     val icon: Int,
     val tint: Color = Color.Unspecified,
     val description: String,
-    val uniqueInputs: List<ToolInputField> // <--- The variable part
+    val uniqueInputs: List<ToolInputField>
 )

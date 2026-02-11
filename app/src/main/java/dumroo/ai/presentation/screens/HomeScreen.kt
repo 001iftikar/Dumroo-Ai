@@ -1,41 +1,70 @@
 package dumroo.ai.presentation.screens
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import dumroo.ai.R
 import dumroo.ai.domain.model.Tool
 import dumroo.ai.domain.model.ToolInputField
 import dumroo.ai.presentation.components.ThemeBackground
 import dumroo.ai.presentation.components.ToolItem
 import dumroo.ai.presentation.components.TopBarIcon
+import dumroo.ai.presentation.navigation.Route
 
 @Composable
 fun HomeScreen(
+    navHostController: NavHostController,
     isDarkTheme: Boolean,
-    onThemeToggle: () -> Unit = {}
+    onThemeToggle: () -> Unit
 ) {
-    ThemeBackground(isDarkTheme = isDarkTheme) {
-
-        Scaffold(
-            containerColor = Color.Transparent, // Important!
+            ThemeBackground(isDarkTheme = isDarkTheme) {
+            Scaffold(
+            containerColor = Color.Transparent,
             topBar = {
                 TopBar(
                     isDarkTheme = isDarkTheme,
@@ -43,15 +72,20 @@ fun HomeScreen(
                 )
             }
         ) { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
+            ) {
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp), // Screen side padding
-                    verticalArrangement = Arrangement.spacedBy(12.dp), // Space between cards
-                    contentPadding = PaddingValues(bottom = 20.dp) // Bottom scroll padding
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
-                    // "Popular for You" Header
                     item {
                         Text(
                             text = "Popular for You",
@@ -62,18 +96,18 @@ fun HomeScreen(
                         )
                     }
 
-                    // The List of Tools
-                    items(
-                        items = dummyTools,
-                        key = { it.title }
-                    ) { tool ->
+                    items(dummyTools) { tool ->
                         ToolItem(
                             tool = tool,
-                            isDarkTheme = isDarkTheme, // Pass the theme boolean directly
-                            onClick = {}
+                            isDarkTheme = isDarkTheme,
+                            onClick = {
+                                navHostController.navigate(Route.ToolDetailsScreen(tool.id))
+                            }
                         )
                     }
                 }
+
+                HomeBottomPanel(isDarkTheme = isDarkTheme)
             }
         }
     }
@@ -86,7 +120,6 @@ private fun TopBar(
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit = {}
 ) {
-    // 1. Determine Text/Icon Color
     val contentColor = if (isDarkTheme) Color.White else Color.Black
     val subTextColor = Color.Gray
 
@@ -152,7 +185,7 @@ val dummyTools = listOf(
         id = "5e_plan",
         title = "5E Model Lesson Plan",
         icon = R.drawable.baseline_calendar_today_24,
-        tint = Color(0xFF3B82F6), // Blue
+        tint = Color(0xFF3B82F6),
         description = "Create a 5E model lesson plan.",
         uniqueInputs = listOf(
             ToolInputField("subject", "Subject", "e.g., Science", InputType.Text),
@@ -165,7 +198,7 @@ val dummyTools = listOf(
         id = "behavior_plan",
         title = "Behavior Intervention Plan",
         icon = R.drawable.baseline_group_24,
-        tint = Color(0xFF8B5CF6), // Violet/Magenta
+        tint = Color(0xFF8B5CF6),
         description = "Create a behavior intervention plan.",
         uniqueInputs = listOf(
             ToolInputField("grade", "Grade level", "Enter grade level", InputType.Text),
@@ -178,7 +211,7 @@ val dummyTools = listOf(
         id = "class_newsletter",
         title = "Class Newsletter",
         icon = R.drawable.outline_chat_bubble_24,
-        tint = Color(0xFF10B981), // Green
+        tint = Color(0xFF10B981),
         description = "Generate a newsletter for your class.",
         uniqueInputs = listOf(
             ToolInputField("classroom_activities", "Classroom activities", "Enter classroom activities", InputType.Text),
@@ -190,7 +223,7 @@ val dummyTools = listOf(
         id = "diff_planner",
         title = "Differentiation Planner",
         icon = R.drawable.baseline_calendar_today_24,
-        tint = Color(0xFF3B82F6), // Blue
+        tint = Color(0xFF3B82F6),
         description = "Plan differentiated instruction.",
         uniqueInputs = listOf(
             ToolInputField("subject", "Subject", "e.g., Science", InputType.Text),
@@ -203,7 +236,7 @@ val dummyTools = listOf(
         id = "email_responder",
         title = "Email Responder",
         icon = R.drawable.outline_chat_bubble_24,
-        tint = Color(0xFF10B981), // Green
+        tint = Color(0xFF10B981),
         description = "Draft professional email responses.",
         uniqueInputs = listOf(
             ToolInputField("received_content", "Received email content", "Enter received email content", InputType.Text),
@@ -214,7 +247,7 @@ val dummyTools = listOf(
         id = "game_designer",
         title = "Game Designer",
         icon = R.drawable.outline_gamepad_circle_down_24,
-        tint = Color.Gray, // Default gray
+        tint = Color.Gray,
         description = "Design educational games.",
         uniqueInputs = listOf(
             ToolInputField("subject", "Subject", "Enter subject", InputType.Text),
@@ -227,7 +260,7 @@ val dummyTools = listOf(
         id = "iep_gen",
         title = "IEP Generator",
         icon = R.drawable.baseline_group_24,
-        tint = Color(0xFF8B5CF6), // Magenta
+        tint = Color(0xFF8B5CF6),
         description = "Generate Individualized Education Programs.",
         uniqueInputs = listOf(
             ToolInputField("student_needs", "Student's needs", "Enter student's needs", InputType.Text),
@@ -239,7 +272,7 @@ val dummyTools = listOf(
         id = "lesson_plan_gen",
         title = "Lesson Plan Generator",
         icon = R.drawable.baseline_calendar_today_24,
-        tint = Color(0xFF3B82F6), // Blue
+        tint = Color(0xFF3B82F6),
         description = "Generate standard lesson plans.",
         uniqueInputs = listOf(
             ToolInputField("subject", "Subject", "Enter subject", InputType.Text),
@@ -252,7 +285,7 @@ val dummyTools = listOf(
     Tool(
         id = "leveler",
         title = "Leveler",
-        icon = R.drawable.outline_gamepad_circle_down_24, // Using gamepad icon as placeholder or specific level icon
+        icon = R.drawable.outline_gamepad_circle_down_24,
         tint = Color.Black,
         description = "Adjust content reading levels.",
         uniqueInputs = listOf(
@@ -267,7 +300,7 @@ val dummyTools = listOf(
         id = "ptc_planner",
         title = "Parent-Teacher Conference Planner",
         icon = R.drawable.outline_chat_bubble_24,
-        tint = Color(0xFF10B981), // Green
+        tint = Color(0xFF10B981),
         description = "Plan for parent-teacher conferences.",
         uniqueInputs = listOf(
             ToolInputField("grade", "Grade level", "Enter grade level", InputType.Text),
@@ -278,8 +311,161 @@ val dummyTools = listOf(
     )
 )
 
+@Composable
+fun HomeBottomPanel(
+    isDarkTheme: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val panelColor = if (isDarkTheme) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.9f)
+    val searchBarColor = if (isDarkTheme) Color(0xFF1F2937) else Color(0xFFE5E7EB)
+    val subTextColor = if (isDarkTheme) Color.Gray else Color.DarkGray
+    val contentColor = if (isDarkTheme) Color.White else Color.Black
 
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedTab by remember { mutableStateOf("ContentAI") }
 
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        color = panelColor,
+        shadowElevation = 0.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .navigationBarsPadding(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                CategoryDropdown(isDarkTheme = isDarkTheme)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Icon(Icons.Outlined.Star, null, tint = subTextColor, modifier = Modifier.size(16.dp))
+                    Text("3", style = MaterialTheme.typography.labelMedium, color = contentColor)
+                }
+                Text("Browse all 10 tools", style = MaterialTheme.typography.labelSmall, color = subTextColor)
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(searchBarColor)
+                    .padding(horizontal = 12.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Search, "Search", tint = subTextColor)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Search AI Tools...", color = subTextColor.copy(alpha = 0.7f), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(if (isDarkTheme) Color.Black.copy(alpha=0.5f) else Color(0xFFD1D5DB))
+                    .padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)).clickable { selectedTab = "Library" },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(painterResource(id = R.drawable.outline_menu_book_24), "Library", tint = subTextColor)
+                }
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)).background(Color(0xFF1E3A8A)).clickable { selectedTab = "ContentAI" },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(painterResource(id = R.drawable.baseline_auto_awesome_24), null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("ContentAI", color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryDropdown(isDarkTheme: Boolean) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf("All Tools") }
+
+    val categories = listOf(
+        "All Tools", "Lesson Planning", "Assessment", "Communication",
+        "Engagement", "Content Creation", "Questions", "Student Support",
+        "Differentiation", "Intellectual Prep", "Community Tools",
+        "Literacy", "Social-Emotional"
+    )
+
+    val contentColor = if (isDarkTheme) Color.White else Color.Black
+
+    val dropdownBg = if (isDarkTheme) {
+        Color.Black.copy(alpha = 0.8f)
+    } else {
+        Color.White.copy(alpha = 0.95f)
+    }
+
+    Box {
+        Row(
+            modifier = Modifier
+                .clickable { expanded = true }
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = selectedCategory,
+                style = MaterialTheme.typography.labelLarge,
+                color = contentColor
+            )
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = null,
+                tint = if (isDarkTheme) Color.Gray else Color.DarkGray,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .heightIn(max = 300.dp)
+                .background(Color.Transparent),
+            containerColor = dropdownBg,
+            shape = RoundedCornerShape(16.dp),
+            border = BorderStroke(1.dp, if (isDarkTheme) Color.White.copy(0.1f) else Color.Black.copy(0.1f))
+        ) {
+            categories.forEach { category ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = category,
+                            color = contentColor,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    onClick = {
+                        selectedCategory = category
+                        expanded = false
+                    },
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+        }
+    }
+}
 
 
 

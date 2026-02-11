@@ -30,22 +30,15 @@ fun ToolItem(
     isDarkTheme: Boolean,
     onClick: () -> Unit
 ) {
-    // 1. Dynamic Colors based on Theme
     val containerColor = if (isDarkTheme) Color.Black else Color.White
-
-    // Border: Subtle white in dark mode, light gray in light mode
     val borderColor = if (isDarkTheme) Color.White.copy(alpha = 0.15f) else Color.LightGray.copy(alpha = 0.5f)
-
-    // Text Color
     val textColor = if (isDarkTheme) Color.White else Color.Black
-
-    // Icon Container: White in dark mode (to make icon pop), Light Gray in light mode
     val iconBoxColor = if (isDarkTheme) Color.White else Color(0xFFF3F4F6)
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp)) // Rounded corners for the whole card
+            .clip(RoundedCornerShape(16.dp))
             .border(
                 width = 1.dp,
                 color = borderColor,
@@ -53,27 +46,25 @@ fun ToolItem(
             )
             .background(containerColor)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp), // Internal padding inside the card
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp) // Space between Icon and Text
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 2. The Icon Container (The square box around the icon)
         Box(
             modifier = Modifier
-                .size(40.dp) // Fixed square size
-                .clip(RoundedCornerShape(12.dp)) // Rounded corners for icon box
+                .size(40.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .background(iconBoxColor),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(id = tool.icon),
                 contentDescription = null,
-                tint = tool.tint, // Keep the specific tool color (Blue/Green/Purple)
+                tint = tool.tint,
                 modifier = Modifier.size(20.dp)
             )
         }
 
-        // 3. The Title Text
         Text(
             text = tool.title,
             color = textColor,
