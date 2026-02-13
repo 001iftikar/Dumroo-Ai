@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
@@ -30,9 +31,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -62,11 +65,13 @@ fun HomeScreen(
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit
 ) {
+    val name = "Sarah" // state, will come from api
             ThemeBackground(isDarkTheme = isDarkTheme) {
             Scaffold(
             containerColor = Color.Transparent,
             topBar = {
                 TopBar(
+                    userName = name,
                     isDarkTheme = isDarkTheme,
                     onThemeToggle = onThemeToggle
                 )
@@ -117,6 +122,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
+    userName: String,
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit = {}
 ) {
@@ -131,7 +137,7 @@ private fun TopBar(
         ),
         title = {
             Greeting(
-                name = "Sarah",
+                name = userName,
                 titleColor = contentColor,
                 subtitleColor = subTextColor
             )
@@ -312,7 +318,7 @@ val dummyTools = listOf(
 )
 
 @Composable
-fun HomeBottomPanel(
+private fun HomeBottomPanel(
     isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -362,7 +368,24 @@ fun HomeBottomPanel(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Search, "Search", tint = subTextColor)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Search AI Tools...", color = subTextColor.copy(alpha = 0.7f), style = MaterialTheme.typography.bodyMedium)
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = {searchQuery = it},
+                        placeholder = {
+                            Text(
+                                "Search AI Tools...",
+                                color = subTextColor.copy(alpha = 0.7f),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        )
+                    )
                 }
             }
 
@@ -371,18 +394,31 @@ fun HomeBottomPanel(
                     .fillMaxWidth()
                     .height(50.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(if (isDarkTheme) Color.Black.copy(alpha=0.5f) else Color(0xFFD1D5DB))
+                    .background(
+                        if (isDarkTheme) Color.Black.copy(alpha = 0.5f) else Color(
+                            0xFFD1D5DB
+                        )
+                    )
                     .padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)).clickable { selectedTab = "Library" },
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { selectedTab = "Library" },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(painterResource(id = R.drawable.outline_menu_book_24), "Library", tint = subTextColor)
                 }
                 Box(
-                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)).background(Color(0xFF1E3A8A)).clickable { selectedTab = "ContentAI" },
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFF1E3A8A))
+                        .clickable { selectedTab = "ContentAI" },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -397,7 +433,7 @@ fun HomeBottomPanel(
 }
 
 @Composable
-fun CategoryDropdown(isDarkTheme: Boolean) {
+private fun CategoryDropdown(isDarkTheme: Boolean) {
     var expanded by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf("All Tools") }
 

@@ -137,6 +137,11 @@ fun ToolDetailScreen(
                                             isDarkTheme = isDarkTheme
                                         )
                                         Spacer(modifier = Modifier.height(16.dp))
+                                        HorizontalDivider(
+                                            color = if (isDarkTheme) Color(0xFF1F2937) else Color.LightGray,
+                                            thickness = 1.dp
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
                                     }
 
                                     Column(
@@ -155,10 +160,7 @@ fun ToolDetailScreen(
                                             isDarkTheme = isDarkTheme
                                         )
 
-                                        HorizontalDivider(
-                                            color = if (isDarkTheme) Color(0xFF1F2937) else Color.LightGray,
-                                            thickness = 1.dp
-                                        )
+
 
                                         DynamicBodySection(
                                             inputs = tool.uniqueInputs,
@@ -241,7 +243,7 @@ fun ToolDetailScreen(
 }
 
 @Composable
-fun ChatHeaderRow(isDarkTheme: Boolean) {
+private fun ChatHeaderRow(isDarkTheme: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -287,7 +289,7 @@ fun ChatHeaderRow(isDarkTheme: Boolean) {
 }
 
 @Composable
-fun HidePanelButton(
+private fun HidePanelButton(
     isVisible: Boolean,
     onToggle: () -> Unit,
     isDarkTheme: Boolean
@@ -327,7 +329,7 @@ fun HidePanelButton(
 }
 
 @Composable
-fun BouncingRobotHeader(
+private fun BouncingRobotHeader(
     description: String,
     isDarkTheme: Boolean
 ) {
@@ -368,7 +370,7 @@ fun BouncingRobotHeader(
 }
 
 @Composable
-fun ToolDetailTopBar(
+private fun ToolDetailTopBar(
     selectedTab: String,
     onTabSelected: (String) -> Unit,
     onBackClick: () -> Unit,
@@ -442,7 +444,7 @@ fun ToolDetailTopBar(
 }
 
 @Composable
-fun CommonHeaderSection(
+private fun CommonHeaderSection(
     language: String,
     onLanguageChange: (String) -> Unit,
     curriculum: String,
@@ -473,7 +475,7 @@ fun CommonHeaderSection(
 }
 
 @Composable
-fun DynamicBodySection(
+private fun DynamicBodySection(
     inputs: List<ToolInputField>,
     formState: Map<String, String>,
     onFieldChange: (String, String) -> Unit,
@@ -516,7 +518,7 @@ fun DynamicBodySection(
 }
 
 @Composable
-fun GenericTextField(
+private fun GenericTextField(
     label: String,
     placeholder: String,
     value: String,
@@ -562,7 +564,7 @@ fun GenericTextField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GenericDropdown(
+private fun GenericDropdown(
     label: String,
     placeholder: String = "Select option",
     options: List<String>,
